@@ -39,9 +39,8 @@ void rssi(void (*handler)(prism_value rssi))
 			// Check if FromDS flag equals 0
 			if ( (eh->frame_control & 0xc0) == 0x80 ) //TODO Check ToDS = 1
 			{ 
-				/* Do something with (ph->rssi).data */
-				(*handler)(ph->rssi);
-				//TODO get MAC address
+				printf("irssi : data %d \t| MAC %02x:%02x:%02x:%02x:%02x:%02x |\n", 
+						ph->rssi.data, eh->source_addr[0],eh->source_addr[1],eh->source_addr[2],eh->source_addr[3],eh->source_addr[4],eh->source_addr[5]);
 			}
 		}
 	}
