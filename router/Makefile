@@ -85,7 +85,7 @@ ifneq ($(strip $(HEADERS_SUBDIR)),)
 INCLUDES				+= $(subst $(SPACE),$(SPACE)-I$(SPACE),$(SPACE)$(HEADERS_SUBDIR))
 endif 
 L_FLAGS					 = 
-LIBRARIES				 = -L$(PLATFORM_DIR)/lib/ -L$(PLATFORM_DIR)/usr/lib/ -lpcap -lm -lcrypto -Lpthread
+LIBRARIES				 = -L$(PLATFORM_DIR)/lib/ -L$(PLATFORM_DIR)/usr/lib/ -lpcap -lm -Lpthread
 
 
 ## Targets definitions
@@ -232,7 +232,7 @@ debug:
 
 exec: $(BINARY)
 	@echo "$(EXEC_MSG)"
-	@$(BINARY)
+	scp $(BINARY) root@192.168.1.1:
 
 clean:
 	@echo "$(CLEAN_MSG)"
