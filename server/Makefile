@@ -46,13 +46,11 @@ INSTALL_DIR 			 = /usr/bin
 BINARY_DIR 				 = bin
 COMPILATION_DIR 		 = build
 OBJECTS_DIR 			 = $(COMPILATION_DIR)/obj
-DEPENDANCIES_DIR 		 = $(COMPILATION_DIR)/dep
 SOURCES_DIR 			 = src
-HEADERS_DIR 			 = include
 DOCUMENTATION_DIR 		 = doc
 DATA_DIR 				 = data
 ETC_DIR 				 = etc
-MODULES_DIR 			 = modules
+LIBRARIES_DIR 			 = lib
 
 ## Space variable
 NOTHING = 
@@ -60,43 +58,29 @@ SPACE =$(NOTHING) $(NOTHING)
 
 ## Subdirectories definitions
 SOURCES_SUBDIR			:= ${sort ${dir ${wildcard ${SOURCES_DIR}/*/*/}}}
-HEADERS_SUBDIR			:= ${sort ${dir ${wildcard ${HEADERS_DIR}/*/*/}}}
 OBJECTS_SUBDIR			:= $(patsubst $(SOURCES_DIR)/%,$(OBJECTS_DIR)/%,$(SOURCES_SUBDIR))
-DEPENDANCIES_SUBDIR		:= $(patsubst $(SOURCES_DIR)/%,$(DEPENDANCIES_DIR)/%,$(SOURCES_SUBDIR))
 
 ## VPath definitions
 VPATH					 = $(SOURCES_SUBDIR)
 
 ## File extensions definitions
-SOURCE_EXT 				 = cpp
-HEADER_EXT 				 = hpp
-OBJECTS_EXT 			 = o
-DEPENDANCY_EXT 			 = d
-MODULES_EXT 			 = inc
+SOURCE_EXT 				 = java
+OBJECTS_EXT 			 = class
+BINARY_EXT 				 = jar
 
 ## Compilator definitions
-CXX 					 = g++
-DEFINES					 = 
-HEADERS_SUPL			 = 
-CXX_FLAGS 				 = -g -Wall -W
-INCLUDES				 = $(HEADERS_SUPL) -I $(HEADERS_DIR) 
-ifneq ($(strip $(HEADERS_SUBDIR)),)
-INCLUDES				+= $(subst $(SPACE),$(SPACE)-I$(SPACE),$(SPACE)$(HEADERS_SUBDIR))
-endif 
-L_FLAGS					 =
-LIBRARIES				 = 
+CXX 					 = javac
+JAR						 = jar
+CXX_FLAGS 				 = -g
+JAR_FLAGS				 = cf
 
 
 ## Targets definitions
 SOURCES					 = $(wildcard $(SOURCES_DIR)/*.$(SOURCE_EXT))
 SOURCES 				+= $(foreach sdir,$(SOURCES_SUBDIR),$(wildcard $(sdir)*.$(SOURCE_EXT)))
-HEADERS					 = $(wildcard $(HEADERS_DIR)/*.$(HEADER_EXT))
-HEADERS 				+= $(foreach sdir,$(HEADERS_SUBDIR),$(wildcard $(sdir)*.$(HEADER_EXT)))
 OBJECTS 				:= $(patsubst $(SOURCES_DIR)/%.$(SOURCE_EXT),$(OBJECTS_DIR)/%.$(OBJECTS_EXT),$(SOURCES))
-DEPENDANCIES 			:= $(patsubst $(SOURCES_DIR)/%.$(SOURCE_EXT),$(DEPENDANCIES_DIR)/%.$(DEPENDANCY_EXT),$(SOURCES))
-MODULES					 = $(wildcard $(MODULES_DIR)/*.$(MODULES_EXT))
 BINARY 					 = $(notdir $(subst $(SPACE),,$(PWD)))
-BINARY 					:= $(addprefix $(BINARY_DIR)/, $(BINARY))
+BINARY 					:= $(addprefix $(BINARY_DIR)/, $(BINARY)).$(BINARY_EXT)
 
 ## Main target
 all: checkdirs dependancies modules binary
@@ -114,44 +98,21 @@ ifneq (`ls | grep $(OBJECTS_DIR:$(OBJECTS_DIR)/%=%)`,)
 $(OBJECTS) : $(OBJECTS_SUBDIR)
 endif
 
-ifneq (`ls | grep $(DEPENDANCIES_DIR:$(CURRENT_DIR)/%=%)`,)
-$(DEPENDANCIES) : $(DEPENDANCIES_DIR)
-endif
-
-ifneq (`ls | grep $(DEPENDANCIES_DIR:$(CURRENT_DIR)/%=%)`,)
-$(DEPENDANCIES) : $(DEPENDANCIES_SUBDIR)
-endif
-
 ifneq (`ls | grep $(SOURCES_DIR:$(CURRENT_DIR)/%=%)`,)
 $(SOURCES) : $(SOURCES_DIR)
 endif
-
-
-## Files dependancies
-
-$(DEPENDANCIES_DIR)/%.$(DEPENDANCY_EXT): $(SOURCES_DIR)/%.$(SOURCE_EXT)
-	@echo "$(DEPENDENCY_MSG) $< $(TO_MSG) $@ $(PENDING_MSG)"
-	@touch $@
-	@$(CXX) $(INCLUDES) -MM -MF $@ -MP -MT $(patsubst $(SOURCES_DIR)/%.$(SOURCE_EXT),$(OBJECTS_DIR)/%.$(OBJECTS_EXT),$<) $<
-
--include $(DEPENDANCIES)
-
-
-## Modules rules
-
--include $(MODULES)
 
 ## Compilation rules
 
 $(BINARY): $(OBJECTS)
 ifneq ($(OBJECTS),)
 	@echo "$(BINARY_MSG) de $< $(TO_MSG) $@ $(PENDING_MSG)"
-	@$(CXX) $(L_FLAGS) -o $@ $(OBJECTS) $(LIBRARIES)
+	@$(JAR) $(JAR_FLAGS) $@ $(OBJECTS) $(DATA_DIR) $(LIBRARIES_DIR)
 endif
 
 $(OBJECTS_DIR)/%.$(OBJECTS_EXT): $(SOURCES_DIR)/%.$(SOURCE_EXT)
 	@echo "$(OBJECT_MSG) $< $(TO_MSG) $@ $(PENDING_MSG)"
-	@$(CXX) $(CXX_FLAGS) $(INCLUDES) $(DEFINES) -o $@ -c $< 
+	@$(CXX) $(CXX_FLAGS) $< -d $(OBJECTS_DIR) 
 
 
 ## Directories creation rules
@@ -159,11 +120,6 @@ $(OBJECTS_DIR)/%.$(OBJECTS_EXT): $(SOURCES_DIR)/%.$(SOURCE_EXT)
 $(SOURCES_DIR) :
 	@echo "$(DIR_MSG) $@ $(PENDING_MSG)"
 	@echo "$(SOURCE_MSG) $@ $(BEFORE_MAKE_MSG)"
-	@mkdir -p $@ 2> /dev/null
-	
-$(HEADERS_DIR) : 
-	@echo "$(DIR_MSG) $@ $(PENDING_MSG)"
-	@echo "$(HEADER_MSG) $@ $(BEFORE_MAKE_MSG)"
 	@mkdir -p $@ 2> /dev/null
 
 $(COMPILATION_DIR) :
@@ -175,14 +131,6 @@ $(OBJECTS_DIR) :
 	@mkdir -p $@ 2> /dev/null
 
 $(OBJECTS_SUBDIR) :
-	@echo "$(DIR_MSG) $@ $(PENDING_MSG)"
-	@mkdir -p $@ 2> /dev/null
-
-$(DEPENDANCIES_DIR) :
-	@echo "$(DIR_MSG) $@ $(PENDING_MSG)"
-	@mkdir -p $@ 2> /dev/null
-
-$(DEPENDANCIES_SUBDIR) : $(DEPENDANCIES_DIR)
 	@echo "$(DIR_MSG) $@ $(PENDING_MSG)"
 	@mkdir -p $@ 2> /dev/null
 
@@ -209,9 +157,7 @@ $(ETC_DIR) :
 
 alldirs : $(DOCUMENTATION_DIR) $(ETC_DIR) $(DATA_DIR) checkdirs
 
-checkdirs: $(SOURCES_DIR) $(HEADERS_DIR)
-
-dependancies: $(DEPENDANCIES)
+checkdirs: $(SOURCES_DIR)
 
 modules: $(MODULES)
 
@@ -231,7 +177,7 @@ debug:
 
 exec: $(BINARY)
 	@echo "$(EXEC_MSG)"
-	@$(BINARY)
+	@java $(BINARY)
 
 clean:
 	@echo "$(CLEAN_MSG)"
@@ -242,6 +188,6 @@ mrproper: clean
 	@echo "$(MRPROPER_MSG)"
 	@rmdir --ignore-fail-on-non-empty $(COMPILATION_DIR)
 
-install: $(BINARY)
-	@echo "$(INSTALL_MSG)"
-	@cp -R $< $(INSTALL_DIR)
+#~ install: $(BINARY)
+	#~ @echo "$(INSTALL_MSG)"
+	#~ @cp -R $< $(INSTALL_DIR)
