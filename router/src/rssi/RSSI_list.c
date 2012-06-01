@@ -4,10 +4,9 @@ struct timezone tz = {0, 0};
 
 DeviceList* is_known(DeviceList ** l , unsigned char  mac_addr [ 6 ])
 {
-  if (l == NULL) {
-    printf("VOID\n");
+
+  if (l == NULL)
 		return NULL;
-	}
 	DeviceList* tmp_l = *l;
 	int known = 0;
 	while (tmp_l != NULL && !known)
