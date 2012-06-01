@@ -1,5 +1,7 @@
 package fr.utbm.lo53.wipos.server.logic;
 
+import java.sql.SQLException;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -18,4 +20,13 @@ public class Rssi
 	public double average;
 	@DatabaseField
 	public double standardDeviation;
+	
+	public void fromRequest(String[] params) throws SQLException
+	{
+		if(params.length > 4)
+		{
+			accessPoint = AccessPoint.get(params[params.length-2]);
+			average = Double.parseDouble(params[params.length-1]);
+		}
+	}
 }

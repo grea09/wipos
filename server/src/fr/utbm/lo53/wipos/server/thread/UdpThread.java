@@ -3,6 +3,7 @@ package fr.utbm.lo53.wipos.server.thread;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -12,14 +13,16 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
-import fr.utbm.lo53.wipos.server.logic.Constants;
+import fr.utbm.lo53.wipos.server.Common;
 import fr.utbm.lo53.wipos.server.logic.Location;
 import fr.utbm.lo53.wipos.server.logic.Map;
+import fr.utbm.lo53.wipos.server.logic.Rssi;
+import fr.utbm.lo53.wipos.server.logic.TempRssi;
 
 public class UdpThread extends Thread
 {
 	private ConnectionSource connectionSource;
-	private HashMap<Class<?>, Dao<?, String>> daos;
+	private HashMap<Class<?>, Dao<?, Integer>> daos;
 	private static UdpThread instance;
 	
        
@@ -31,8 +34,8 @@ public class UdpThread extends Thread
 		try
 		{
 			// create a connection source to our database
-	        connectionSource = new JdbcConnectionSource(Constants.DATABASE_URL);
-	        daos = Constants.getDao(connectionSource);
+	        connectionSource = new JdbcConnectionSource(Common.DATABASE_URL);
+	        daos = Common.getDao(connectionSource);
 	     
 		} catch (SQLException e)
 		{
@@ -41,19 +44,26 @@ public class UdpThread extends Thread
 		}
     }
 	
-	
-	public void finalize()
+	@Override
+	public void finalize() throws Throwable
     {
-    	try
-		{
+    		super.finalize();
     		// close the connection source
 			connectionSource.close();
-		} catch (SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
+	
+	public static void send(String message) throws IOException
+	{
+		byte[] buffer = message.getBytes();
+		DatagramSocket socket = new DatagramSocket(Common.PORT);
+		
+		for(byte[] accessPointIp: Common.ACCESS_POINT_IP)
+		{
+			InetAddress address = InetAddress.getByAddress(accessPointIp);
+			DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, Common.PORT);
+			socket.send(packet);
+		}
+	}
 	
 	@Override
 	public void run()
@@ -66,20 +76,33 @@ public class UdpThread extends Thread
 			{
 				try
 				{
-					byte[]buffer = new byte[100 + 23 + 10]; //23 = -xxx and 10 for precision
+					byte[]buffer = new byte[100];
 					DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 					DatagramSocket socket = new DatagramSocket(1234);
 					socket.receive(packet);
 					String[] params = new String(packet.getData(), 0, packet.getLength()).split(";");
 					
-					//TODO verify response
-					Location location = new Location();
-					location.fromRequest(params);
+					//TODO Verify and parse data
+					assert params.length >= 4;
 					
-					Map map = (Map) daos.get(Map.class).queryForId(params[3]);
+					TempRssi tempRssi = new TempRssi();
+					tempRssi.fromRequest(params);
+					createIfNotExists(tempRssi);
 					
-					//TODO getAP from Mac
-					location.map = map;
+					if(params.length > 4)
+					{
+						Map map = (Map) daos.get(Map.class).queryForId(Integer.decode(params[3]));
+						
+						Location location = new Location();
+						location.fromRequest(params);
+						location.map = map;
+						createIfNotExists(location);
+						
+						Rssi rssi = new Rssi();
+						rssi.fromRequest(params);
+						createIfNotExists(rssi);
+					}
+					
 				}
 				catch (IOException e) {
 					// TODO: handle exception
@@ -92,5 +115,11 @@ public class UdpThread extends Thread
 				}
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private<T> void createIfNotExists(final T dbo) throws SQLException
+	{
+		((Dao<T, Integer>)daos.get(dbo.getClass())).createIfNotExists(dbo);
 	}
 }
