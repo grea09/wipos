@@ -16,4 +16,16 @@ public class TempRssi
 	public String clientMac;
 	@DatabaseField
 	public double average;
+	
+	public void fromRequest(String[] params)
+	{
+		if(params.length > 3)
+		{
+			//TODO getAP from Mac
+			//AccessPoint.get(params[params.length-3]);
+			//if null then insert
+			clientMac = params[params.length-2];
+			average = Double.parseDouble(params[params.length-1]);
+		}
+	}
 }

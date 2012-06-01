@@ -18,4 +18,18 @@ public class Location
 	public double y;
 	@DatabaseField(foreign = true)
 	public Map map;
+	
+	public String toString()
+	{
+		return x+";"+y+";";
+	}
+
+	public void fromRequest(String[] params)
+	{
+		if(params.length > 4)
+		{
+			x = Integer.decode(params[1]);
+			y = Integer.decode(params[2]);
+		}
+	}
 }

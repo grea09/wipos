@@ -17,5 +17,5 @@ public class Rssi
 	@DatabaseField
 	public double average;
 	@DatabaseField
-	public double deviation;
+	public double standardDeviation;
 }

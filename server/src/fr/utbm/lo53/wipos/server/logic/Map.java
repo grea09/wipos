@@ -25,4 +25,17 @@ public class Map
 	public double meterHeight;
 	@DatabaseField(dataType=DataType.BYTE_ARRAY)
 	public byte[] content;
+	
+	public String toString()
+	{
+		return id +";";
+	}
+	
+	public void fromRequest(String[] params)
+	{
+		if(params.length > 4)
+		{
+			id = Integer.decode(params[3]);
+		}
+	}
 }
