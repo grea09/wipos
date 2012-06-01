@@ -15,7 +15,7 @@
 #include "RSSI_list.h"
 
 typedef struct {
-  char op[4];
+  char op[5];
   double x, y;
   int mapID;
   int semi_colon_nb;

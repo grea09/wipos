@@ -30,12 +30,12 @@ double average (DeviceList ** l , unsigned char mac_addr [ 6 ])
 {
   if (l == NULL) {
     printf("VOID\n");
-		return 0;
+		return -95;
 	}
 	DeviceList* tmp_l = is_known (l, mac_addr);
 	if (tmp_l == NULL) {
 	  // unknown mac address
-	  return 0;
+	  return -95;
 	}
 	else {
 	  double average = 0;

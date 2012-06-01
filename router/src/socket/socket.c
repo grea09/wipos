@@ -41,6 +41,7 @@ void* socket_thread (void* args)
 			  printf("--- ERROR : parse (buffer) \n");
 			}
 			request.average = average (l, request.mac_addr);
+			request.op = "RSSI";
 			char* msg = display(request);
 			sendto (skfd, msg, sizeof(msg), 0, &remote_addr,	&addr_size);
 			free (msg);
