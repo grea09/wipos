@@ -5,11 +5,9 @@
 #include <prism.h>
 
 #include "rssi.h"
+#include "RSSI_list.h"
 
-
-
-
-void rssi(void (*handler)(prism_value rssi))
+void* rssi_thread (void* args)
 {
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_t * handle = NULL;
@@ -28,6 +26,10 @@ void rssi(void (*handler)(prism_value rssi))
 		exit(EXIT_FAILURE);
 	}
 	
+	l = NULL;
+  l = malloc (sizeof(DeviceList*));
+  (*l) = NULL;
+	
 	while ( 1 ) 
 	{
 		packet = pcap_next(handle, &header);
@@ -37,10 +39,17 @@ void rssi(void (*handler)(prism_value rssi))
 			eh = (ieee80211_header *) (packet + ph->msglen);
 			
 			// Check if FromDS flag equals 0
-			if ( (eh->frame_control & 0xc0) == 0x80 ) //TODO Check ToDS = 1
-			{ 
-				printf("irssi : data %d \t| MAC %02x:%02x:%02x:%02x:%02x:%02x |\n", 
-						ph->rssi.data, eh->source_addr[0],eh->source_addr[1],eh->source_addr[2],eh->source_addr[3],eh->source_addr[4],eh->source_addr[5]);
+			if ( (eh->frame_control & 0xc0) == 0x80 )
+			{
+  			DeviceList* tmpDevice = is_known (l, eh->source_addr);
+				if (tmpDevice == NULL)
+				{
+					tmpDevice = add_device (l, eh->source_addr);
+				}
+				add_rssi_sample(tmpDevice, ph->rssi.data);
+				delete_outdate(l);
+				print (l);
+				printf("-------------------------------------------\n");
 			}
 		}
 	}

@@ -13,6 +13,6 @@ typedef struct
   u_char address4[6];
 } ieee80211_header;
 
-void rssi(void (*handler)(prism_value rssi));
+void* rssi_thread (void* args);
 
 #endif

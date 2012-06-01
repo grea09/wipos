@@ -27,8 +27,10 @@ void add_rssi_sample (DeviceList * l, int rssi_value);
 void clear_rssi_list (DeviceList * l);
 void delete_outdate (DeviceList ** l);
 void delete_outdated (DeviceList * l, struct timeval current_time);
-DeviceList* is_known(DeviceList ** l , unsigned char  mac_addr [ 6 ]);
+DeviceList* is_known(DeviceList ** l , unsigned char mac_addr [ 6 ]);
 void print (DeviceList** l);
+double average (DeviceList ** l , unsigned char mac_addr [ 6 ]);
 
+DeviceList** l;
 
 #endif /* __RSSI_LIST_h */

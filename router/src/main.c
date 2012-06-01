@@ -3,8 +3,10 @@
 #include <unistd.h>
 #include <pcap.h>
 #include <prism.h>
+#include <pthread.h>
 
 #include "rssi.h"
+#include "socket.h"
 
 void handler(prism_value rssi)
 {
@@ -14,6 +16,15 @@ void handler(prism_value rssi)
 
 int main()
 {
-	rssi(&handler);
+	// rssi(&handler);
+	pthread_t rssiT;
+	pthread_t socketT;
+	
+	pthread_create (&rssiT, NULL, rssi_thread, (void*)0);
+	pthread_create (&socketT, NULL, socket_thread, (void*)0);
+	
+	pthread_join (rssiT, NULL);
+  pthread_join (socketT, NULL);
+	
 	return EXIT_SUCCESS;
 }

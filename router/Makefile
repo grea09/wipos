@@ -79,13 +79,13 @@ MODULES_EXT 			 = inc
 CXX 					 = $(PLATFORM_DIR)/bin/mipsel-linux-gcc
 DEFINES					 = 
 HEADERS_SUPL			 = -I$(PLATFORM_DIR)/include/ -I$(PLATFORM_DIR)/usr/include/
-CXX_FLAGS 				 = -Wall -Werror -O3
+CXX_FLAGS 				 = -Wall -O3
 INCLUDES				 = $(HEADERS_SUPL) -I $(HEADERS_DIR) 
 ifneq ($(strip $(HEADERS_SUBDIR)),)
 INCLUDES				+= $(subst $(SPACE),$(SPACE)-I$(SPACE),$(SPACE)$(HEADERS_SUBDIR))
 endif 
 L_FLAGS					 = 
-LIBRARIES				 = -L$(PLATFORM_DIR)/lib/ -L$(PLATFORM_DIR)/usr/lib/ -lpcap -lm -Lpthread
+LIBRARIES				 = -L$(PLATFORM_DIR)/lib/ -L$(PLATFORM_DIR)/usr/lib/ -lpcap -lm -lpthread
 
 
 ## Targets definitions
