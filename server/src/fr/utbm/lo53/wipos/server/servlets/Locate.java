@@ -3,6 +3,7 @@ package fr.utbm.lo53.wipos.server.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.utbm.lo53.wipos.server.Common;
+import fr.utbm.lo53.wipos.server.logic.AccessPoint;
 import fr.utbm.lo53.wipos.server.thread.UdpThread;
 
 /**
@@ -21,7 +23,7 @@ public class Locate extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static UdpThread udpThread = new UdpThread();
 	private static HashMap<String, Locate> waitList;
-	public double rssi;
+	public Map<AccessPoint, Double> rssis;
 
 	public void finalize() throws Throwable
 	{
@@ -46,13 +48,16 @@ public class Locate extends HttpServlet {
 		if(!(waitList.containsKey(mac)))
 		{
 			UdpThread.send("GET;" + mac);
-			try
+			for (int i = 0; i < Common.ACCESS_POINT_IP.length; i++)
 			{
-				this.wait();
-			} catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try
+				{
+					this.wait();
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 			//TODO Location locate(double rssi)
