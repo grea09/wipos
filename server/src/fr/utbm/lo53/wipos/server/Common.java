@@ -24,7 +24,7 @@ public final class Common
 	
 	public static final byte[][] ACCESS_POINT_IP = new byte[][] 
 			{
-				{(byte) 192,(byte) 168,1,1}
+				{(byte) 192,(byte) 168,1,2}
 			};
 	
 	public static final Class<?>[] CLASSES = new Class<?>[]{Map.class, Location.class, AccessPoint.class, TempRssi.class, Rssi.class};
@@ -53,8 +53,9 @@ public final class Common
 		{
 			if(mac.contains(ip))
 			{
-				//TODO columns constants
-				mac = mac.substring(MAC_COLUMNS[0],MAC_COLUMNS[1]);
+				//TODO split
+				mac = mac.split(" +")[4];
+				//mac = mac.substring(MAC_COLUMNS[0],MAC_COLUMNS[1]);
 				break;
 			}
 		}
