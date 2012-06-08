@@ -11,11 +11,12 @@ import java.net.InetAddress;
 import android.os.AsyncTask;
 import fr.utbm.lo53.wipos.mobile.Common;
 
-public class Locate extends AsyncTask<Void, Void, Long[]>
+public class Measure extends AsyncTask<Long, Void, Void>
 {
 	@Override
-	protected Long[] doInBackground(Void... arg0)
+	protected Void doInBackground(Long... coordinate)
 	{
+		assert coordinate.length == 2;
 		byte[] buffer = "SPAM".getBytes();
 		try
 		{
@@ -29,17 +30,16 @@ public class Locate extends AsyncTask<Void, Void, Long[]>
 				Thread.yield();
 			}
 			DataOutputStream dataOuputStream = (DataOutputStream) (Common.SERVER.openConnection().getOutputStream());
-			dataOuputStream.writeBytes("LOCATE");
+			dataOuputStream.writeBytes("MEASURE;" + coordinate[0] + ";" + coordinate[1] + ";" + 1); // TODO mid
 			dataOuputStream.flush();
 			dataOuputStream.close();
 			
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Common.SERVER.openConnection().getInputStream()));
 			String[] params = bufferedReader.readLine().split(";");
 			bufferedReader.close();
-			assert params.length == 4;
-			assert params[0] == "LOCATION";
+			assert params[0] == "OK";
 			//TODO parse mapId
-			return new Long[]{Long.valueOf(params[1]),Long.valueOf(params[2])};
+			return null;
 		}
 		catch (IOException e)
 		{

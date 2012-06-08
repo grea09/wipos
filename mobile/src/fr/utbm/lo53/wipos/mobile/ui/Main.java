@@ -1,7 +1,5 @@
 package fr.utbm.lo53.wipos.mobile.ui;
 
-import org.w3c.dom.Text;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
