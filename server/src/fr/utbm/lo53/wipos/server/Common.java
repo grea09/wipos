@@ -37,10 +37,10 @@ public final class Common
 	{
 		HashMap<Class<?>, Dao<?, Integer>> dao = null;
 		for(Class<?> clazz: Common.CLASSES)
-        {
-        	dao.put(clazz,(Dao<?, Integer>) DaoManager.createDao(connectionSource, clazz));
-	        TableUtils.createTable(connectionSource, clazz);
-        }
+		{
+			dao.put(clazz,(Dao<?, Integer>) DaoManager.createDao(connectionSource, clazz));
+			TableUtils.createTable(connectionSource, clazz);
+		}
 		return dao;
 	}
 	
