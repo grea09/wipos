@@ -232,7 +232,7 @@ debug:
 
 exec: $(BINARY)
 	@echo "$(EXEC_MSG)"
-	scp $(BINARY) root@192.168.1.1:
+	scp $(BINARY) root@192.168.1.2:
 
 clean:
 	@echo "$(CLEAN_MSG)"
