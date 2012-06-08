@@ -18,6 +18,7 @@ import fr.utbm.lo53.wipos.server.logic.Location;
 import fr.utbm.lo53.wipos.server.logic.Map;
 import fr.utbm.lo53.wipos.server.logic.Rssi;
 import fr.utbm.lo53.wipos.server.logic.TempRssi;
+import fr.utbm.lo53.wipos.server.servlets.Locate;
 
 public class UdpThread extends Thread
 {
@@ -101,6 +102,12 @@ public class UdpThread extends Thread
 						Rssi rssi = new Rssi();
 						rssi.fromRequest(params);
 						createIfNotExists(rssi);
+					}
+					else
+					{
+						Locate locate = Locate.get(tempRssi.clientMac);
+						locate.rssis.put(tempRssi.accessPoint, tempRssi.average);
+						locate.notify();
 					}
 					
 				}
