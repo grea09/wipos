@@ -1,0 +1,130 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel}
+
+% font
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+% marges
+\usepackage{vmargin}
+% en-tete
+\usepackage{fancyhdr}
+% indice en mode texte
+\usepackage{subscript}
+% symbole euro
+\usepackage{marvosym}
+% faire des graphes, arbres
+\usepackage{tikz}
+\usetikzlibrary{positioning,shadows,arrows}
+% pour les boucles for
+\usepackage{pgffor}
+% pour les traits sous les sections
+\usepackage{sectsty}
+% pour les tableaux
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor, colortbl}
+% augmenter l'interligne
+\usepackage{setspace}
+% justifier le texte
+\usepackage{ragged2e}
+
+
+% images
+\usepackage[pdftex]{graphicx}
+\usepackage{subfig} 
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\setlength{\headheight}{15pt} % supprime un warning
+
+% insertion de code source
+\usepackage{listings}
+\lstset{
+    language=C,
+    keywordstyle=bfseriesttfamilycolor[rgb]{0,0,1},
+    identifierstyle=ttfamily,
+    commentstyle=color[rgb]{0.133,0.545,0.133},
+    stringstyle=ttfamilycolor[rgb]{0.627,0.126,0.941},
+    showstringspaces=false,
+    basicstyle=footnotesize,
+    numberstyle=footnotesize,
+    numbers=left,
+    stepnumber=1,
+    numbersep=10pt,
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=false,
+    aboveskip={1.5baselineskip},
+    columns=fixed,
+    extendedchars=true
+}
+% Pour afficher des algos
+\usepackage[french,onelanguage,lined,boxed]{algorithm2e}
+
+% police
+\newcommand\code[1]{\shorthandoff{:}{\texttt{#1}}}
+\newcommand\titlefont[2]{{\fontfamily{phv}\fontsize{#1}{11pt}\selectfont #2}}
+
+%couleur
+\usepackage{color}
+%%% based on official palette for internship presentations
+\definecolor{utbmpurple}{RGB}{125,92,139}
+\definecolor{utbmyellow}{RGB}{242,227,146}
+\definecolor{utbmgreen}{RGB}{217,217,87}
+\definecolor{utbmgrey}{RGB}{128,128,128}
+\definecolor{utbmgreybandeau}{RGB}{79,78,85}
+\definecolor{utbmwtfisthatpink}{RGB}{184,80,93}
+\newcommand{\boitecolor}[3]
+   {\colorbox{#1}{\textcolor{#2}{#3}}}
+
+% marges
+%%%% debut macro %%%%
+\newenvironment{changemargin}[2]{\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{0pt}%
+\setlength{\rightmargin}{0pt}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{0pt plus 1pt}%
+\addtolength{\leftmargin}{#1}%
+\addtolength{\rightmargin}{#2}%
+}\item }{\end{list}}
+%%%% fin macro %%%%
+% ligne horizontale
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+% format de numerotation des sections / subsections
+% \renewcommand\thesection{\Roman{section}}
+% \renewcommand{\thesubsection}{\Alph{subsection}}
+% \renewcommand{\thesubsubsection}{\arabic{subsubsection}}
+
+\newcommand{\letitre}{LO53 : Positionnement} 
+\title{\letitre}
+\author{Antoine \textsc{Gréa}, Florentin \textsc{Toulemon}}
+\date{\today}
+
+
+\begin{document}
+
+    \input{includes/garde.tex}
+    \newpage
+    \pagestyle{fancy}
+    \pagenumbering{arabic} \setcounter{page}{3}
+    \lhead{}
+    \rhead{LO53 - P2012}
+    \lfoot{A. \textsc{Gréa} - F. \textsc{Toulemon}}
+    \rfoot{\includegraphics[width=1cm]{images/utbmlogo.jpg}}
+    \cfoot{\shortstack{\thepage \\ 
+        \raisebox{-0.5cm}{\tiny\textcolor{utbmgrey}{
+            \shortstack{\propriete}}}
+        }
+    }
+    \enlargethispage{-5cm}
+    \tableofcontents
+    \newpage
+    \input{includes/corps.tex}
+    \newpage
+
+\end{document}
