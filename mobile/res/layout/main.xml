@@ -22,17 +22,14 @@
             android:layout_height="fill_parent"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/cursor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="40dp"
-                android:text="+"
-                android:textSize="40dp" />
-
+            <AbsoluteLayout
+                android:id="@+id/absLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+                />
+            </AbsoluteLayout>
         </LinearLayout>
-
     </FrameLayout>
 
     <LinearLayout
