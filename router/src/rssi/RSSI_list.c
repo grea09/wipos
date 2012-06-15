@@ -156,7 +156,6 @@ void delete_outdated (DeviceList * l, struct timeval current_time)
 	  tmp_rssi = l->dl_rssi_list;
 	  while (tmp_rssi != NULL && difftime (current_time.tv_sec, tmp_rssi->rl_date.tv_sec) > 1) 
 	  {
-	    printf("DELETE %d\n", tmp_rssi->rl_rssi_value);
 	    l->dl_rssi_list = tmp_rssi->rl_next;
 	    free (tmp_rssi);
 	    tmp_rssi = l->dl_rssi_list;
