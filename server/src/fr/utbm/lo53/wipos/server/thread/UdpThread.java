@@ -69,7 +69,7 @@ public class UdpThread extends Thread
 	@Override
 	public void run()
 	{
-		if(instance == null)
+		if(!(instance instanceof UdpThread))
 			instance = this;
 		if(instance == this)
 		{
