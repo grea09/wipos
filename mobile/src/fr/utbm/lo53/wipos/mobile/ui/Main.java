@@ -91,7 +91,8 @@ public class Main extends Activity {
 	}
 
 	public void locate(View view) {
-		
+
+		Log.e("bleh", "blih");
 		Long[] posL = new Long[2];
 		try {
 			posL = mLocate.execute((Void[]) null).get();
@@ -100,10 +101,11 @@ public class Main extends Activity {
 		} catch (ExecutionException e) {
 			Log.e("Locate", "get ", e);
 		}
-		
+		Log.e("bleh", "blah");
 		int[] pos = new int[2];
 		pos[0] = (int) (long) posL[0];
 		pos[1] = (int) (long) posL[1];
+		Log.e("bleh", "bloh");
 		
 		
 		if (cursor != null) {
