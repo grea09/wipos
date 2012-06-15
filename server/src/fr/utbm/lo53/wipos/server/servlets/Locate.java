@@ -2,6 +2,7 @@ package fr.utbm.lo53.wipos.server.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,8 +12,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.support.ConnectionSource;
+
 import fr.utbm.lo53.wipos.server.Common;
 import fr.utbm.lo53.wipos.server.logic.AccessPoint;
+import fr.utbm.lo53.wipos.server.logic.Location;
 import fr.utbm.lo53.wipos.server.thread.UdpThread;
 
 /**
@@ -23,6 +32,8 @@ public class Locate extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static UdpThread udpThread = new UdpThread();
 	private static HashMap<String, Locate> waitList;
+	private String mac;
+	
 	public Map<AccessPoint, Double> rssis;
 
 	public void finalize() throws Throwable
@@ -35,6 +46,28 @@ public class Locate extends HttpServlet {
 		return waitList.get(mac);
 	}
 	
+	protected Location locate() throws SQLException
+	{
+		ConnectionSource connectionSource = new JdbcConnectionSource(Common.DATABASE_URL);
+		Dao<Location, String> rawDao = DaoManager.createDao(connectionSource, Location.class);
+		GenericRawResults<String[]> result = rawDao.queryRaw(
+			    "select id" +
+			    "from TempRssi as T" +
+			    "inner join Rssi as R" +
+			    "on T.accessPoint = R.accessPoint" +
+			    "where T.clientMac = ?" +
+			    "group by 1" +
+			    "order by (avg(abs(R.average - T.average))) desc limit 1", 
+			    mac
+			    );
+		int id = Integer.parseInt(result.getFirstResult()[0]);
+		result.close();
+		Dao<Location, String> locationDao = DaoManager.createDao(connectionSource, Location.class);
+		QueryBuilder<Location, String> statementBuilder = locationDao.queryBuilder();
+		statementBuilder.where().eq("id", id);
+		return locationDao.queryForFirst(statementBuilder.prepare());
+	}
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -44,10 +77,16 @@ public class Locate extends HttpServlet {
 		assert params.length == 1;
 		assert params[0] == getClass().getSimpleName().toUpperCase();
 		
-		udpThread.start();
 		if(!(waitList.containsKey(mac)))
 		{
+			this.mac = mac;
+			udpThread.start();
+			
+			response.setContentType("text/html;charset=UTF-8");
+		    PrintWriter out = response.getWriter();
+		    
 			UdpThread.send("GET;" + mac);
+			waitList.put(mac, this);
 			for (int i = 0; i < Common.ACCESS_POINT_IP.length; i++)
 			{
 				try
@@ -55,18 +94,23 @@ public class Locate extends HttpServlet {
 					this.wait();
 				} catch (InterruptedException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					out.println("ERROR");
+					e.printStackTrace(out);
 				}
 			}
 			
-			//TODO Location locate(double rssi)
+			Location location = null;
+			try
+			{
+				location = locate();
+			} catch (SQLException e)
+			{
+				out.println("ERROR");
+				e.printStackTrace(out);
+			}
 			
-			
-			response.setContentType("text/html;charset=UTF-8");
-		    PrintWriter out = response.getWriter();
 	
-		    out.println("Ha ! ha! your lost !");
+		    out.println("LOCATION;" + location + location.map);
 		}
 		else
 		{

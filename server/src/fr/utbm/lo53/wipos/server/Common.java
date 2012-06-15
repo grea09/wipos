@@ -47,15 +47,14 @@ public final class Common
 	public static String toMac(String ip) throws IOException, FileNotFoundException
 	{
 		String mac = null;
-		//TODO string constant
 		RandomAccessFile arpTable = new RandomAccessFile(MAC_FILE, "r");
 		while((mac = arpTable.readLine())!= null )
 		{
 			if(mac.contains(ip))
 			{
 				//TODO split
-				mac = mac.split(" +")[4];
-				//mac = mac.substring(MAC_COLUMNS[0],MAC_COLUMNS[1]);
+				//mac = mac.split(" +")[4];
+				mac = mac.substring(MAC_COLUMNS[0],MAC_COLUMNS[1]);
 				break;
 			}
 		}
