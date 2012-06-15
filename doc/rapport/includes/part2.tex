@@ -1,0 +1,111 @@
+\lhead{Wi-Fi access point}
+\section{Wi-Fi access point}
+
+\subsection{Short recall of the specifications}
+
+The Wi-Fi access point should run a RSSI measurement software. This software
+manages two tasks :
+
+\begin{itemize}
+    \item listening the devices and keeping their information in a list
+    \item listening the message from the positioning server
+\end{itemize}
+
+This two tasks will be implemented as two threads, using \verb+pthread+.
+
+\subsection{RSSI listener}
+
+\subsubsection{Configuring the access point}
+
+The first step of this part was to configure the AP (Access Point) to listen
+the IRSSI messages. So we installed the pcap library on it and then we set the
+monitoring mode thanks to :
+
+\begin{verbatim}
+root@openwrt$ wlc monitor 1
+\end{verbatim}
+
+This command add the \verb+prism0+ interface, which can be opened with the
+pcaplib previously installed, to get the information from the frames.
+
+\subsubsection{Parsing the frame}
+
+The software read the frame header. This give us, among other things, 
+the MAC address of the device emitting the message, and the RSSI value.
+
+\subsubsection{Listing the information}
+
+So we receive a lot of RSSI, linked to some source addresses. In order to stock
+this information, we implement a double linked list : a list of MAC address,
+and each MAC address linked to a list of the corresponding RSSI values.
+
+We recall the structure of the linked list : 
+
+\begin{lstlisting} 
+typedef struct RssiList {
+	struct timeval rl_date ; // Expiration date
+	int rl_rssi_value ;
+	struct RssiList * rl_next ;
+} RssiList ;
+
+typedef struct DeviceList {
+	unsigned char dl_mac_address [ 6 ] ;
+	RssiList * dl_rssi_list ;
+	struct DeviceList * dl_next ;
+} DeviceList ;
+\end{lstlisting}
+
+We had to implement some functions in order to manage the list. In addition
+from the functions from the subject, we had some of our own.
+
+\begin{itemize}
+    \item \verb+DeviceList* add_device (DeviceList ** l , unsigned char mac_addr [ 6 ]);+\\
+        Add a device (represented by its MAC address to the linked list)
+    \item \verb+void clear_device_list (DeviceList ** l);+\\
+        Clear the list from its device, and so their linked RSSI 
+    \item \verb+void add_rssi_sample (DeviceList * l, int rssi_value);+\\
+        Add an RSSI value to the given device \verb+l+
+    \item \verb+void clear_rssi_list (DeviceList * l);+\\
+        Clear the RSSI values of the given device \verb+l+
+    \item \verb+void delete_outdate (DeviceList ** l);+\\
+        Delete all the outdated value from the linked list
+    \item \verb+void delete_outdated (DeviceList * l, struct timeval current_time);+\\
+        (Called by the previous function) Clear the outdated RSSI values from a
+        given device
+    \item \verb+DeviceList* is_known(DeviceList ** l , unsigned char mac_addr [6]);+\\
+        Return null pointer if the device is unknown, or the pointer to already
+        listed device if it is known. 
+    \item \verb+void print (DeviceList** l);+\\
+        Print in a human readable format the linked list
+    \item \verb+double average (DeviceList ** l , unsigned char mac_addr [6]);+\\
+        Return the average value of all the RSSI values of a given device.
+\end{itemize}
+
+The linked list wasn't a big deal in this project as we already had to
+implement such structure in others UVs. We run it during a long time on the AP
+and didn't get any problem so we assume that it just works correctly. 
+
+\subsubsection{Communication with the server}
+
+We receive requests from the server with this form :
+
+\begin{lstlisting}
+typedef struct {
+  char op[5];
+  double x, y;
+  int mapID;
+  int semi_colon_nb;
+  unsigned char mac_addr[6];
+  unsigned char my_mac_addr[6];
+  double average;
+} request_t ;
+\end{lstlisting}
+
+When we receive such request, we parse it in order to get the concerning MAC
+address. Then we compute the average of the RSSI values linked to this address
+so we can send the response to the server.
+
+
+
+
+

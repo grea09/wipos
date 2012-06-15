@@ -13,16 +13,60 @@
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-        	android:onClick="mesure"
+            android:contentDescription="Carte"
             android:src="@drawable/ic_launcher" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/cursor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="40dp"
+                android:text="+"
+                android:textSize="40dp" />
+
+        </LinearLayout>
 
     </FrameLayout>
 
-    <Button
-        android:id="@+id/locateButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="locate"
-        android:text="Locate" />
+        android:layout_height="wrap_content" >
+
+        <ToggleButton
+            android:id="@+id/toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-10dp"
+            android:onClick="toggle"
+            android:text="ToggleButton" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="cancel"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/mesureButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="mesure"
+            android:text="Mesure" />
+
+        <Button
+            android:id="@+id/locateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="locate"
+            android:text="Locate" />
+    </LinearLayout>
 
 </LinearLayout>
