@@ -1,5 +1,7 @@
 package fr.utbm.lo53.wipos.mobile.ui;
 
+import java.util.concurrent.ExecutionException;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import fr.utbm.lo53.wipos.mobile.R;
 import fr.utbm.lo53.wipos.mobile.R.id;
+import fr.utbm.lo53.wipos.mobile.net.Locate;
+import fr.utbm.lo53.wipos.mobile.net.Measure;
 
 public class Main extends Activity {
 	private final static int cursW = 16;
@@ -26,11 +30,17 @@ public class Main extends Activity {
 	private AbsoluteLayout absLayout;
 
 	private Button bLocate, bCancel, bMesure;
+	
+	private Locate mLocate;
+	private Measure mMeasure;
 
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.main);
+		
+		mLocate = new Locate();
+		mMeasure = new Measure();
 	}
 
 	@Override
@@ -81,6 +91,21 @@ public class Main extends Activity {
 	}
 
 	public void locate(View view) {
+		
+		Long[] posL = new Long[2];
+		try {
+			posL = mLocate.execute((Void[]) null).get();
+		} catch (InterruptedException e) {
+			Log.e("Locate", "get ", e);
+		} catch (ExecutionException e) {
+			Log.e("Locate", "get ", e);
+		}
+		
+		int[] pos = new int[2];
+		pos[0] = (int) (long) posL[0];
+		pos[1] = (int) (long) posL[1];
+		
+		
 		if (cursor != null) {
 			linLayout.removeView(cursor);
 		}
@@ -89,12 +114,13 @@ public class Main extends Activity {
 		cursor.setTextSize(40);
 		cursor.setLayoutParams(new AbsoluteLayout.LayoutParams(
 				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT, 200, 200));
+				ViewGroup.LayoutParams.WRAP_CONTENT, pos[0]-cursW, pos[1]-cursH));
 		((AbsoluteLayout) findViewById(R.id.absLayout)).addView(cursor);
 	}
 
 	public void mesure(View view) {
-
+		mMeasure.execute((long) ((AbsoluteLayout.LayoutParams) absLayout.getLayoutParams()).x, 
+				(long) ((AbsoluteLayout.LayoutParams) absLayout.getLayoutParams()).y);
 	}
 
 	public void cancel(View view) {
