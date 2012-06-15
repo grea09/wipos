@@ -32,10 +32,10 @@ public final class Common
 	private static final String MAC_FILE = "/proc/net/arp";
 	private static final int[] MAC_COLUMNS = {41, 58};
 	
-	@SuppressWarnings({ "null", "unchecked" })
+	@SuppressWarnings("unchecked")
 	public static HashMap<Class<?>, Dao<?, Integer>> getDao(ConnectionSource connectionSource) throws SQLException
 	{
-		HashMap<Class<?>, Dao<?, Integer>> dao = null;
+		HashMap<Class<?>, Dao<?, Integer>> dao = new HashMap<Class<?>, Dao<?,Integer>>();
 		for(Class<?> clazz: Common.CLASSES)
 		{
 			dao.put(clazz,(Dao<?, Integer>) DaoManager.createDao(connectionSource, clazz));
