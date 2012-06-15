@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import fr.utbm.lo53.wipos.mobile.Common;
 
 public class Locate extends AsyncTask<Void, Void, Long[]>
@@ -24,8 +25,7 @@ public class Locate extends AsyncTask<Void, Void, Long[]>
 			tmp = new URL(Common.SERVER + "Locate");
 		} catch (MalformedURLException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(Locate.class.getName(), "Network", e);
 		}
 		LOCATE = tmp;
 	}
@@ -61,7 +61,7 @@ public class Locate extends AsyncTask<Void, Void, Long[]>
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.e(getClass().getName(), "Network", e);
 		}
 		return null;
 	}

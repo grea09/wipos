@@ -11,21 +11,19 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import fr.utbm.lo53.wipos.mobile.R;
-import fr.utbm.lo53.wipos.mobile.R.id;
 import fr.utbm.lo53.wipos.mobile.net.Locate;
 import fr.utbm.lo53.wipos.mobile.net.Measure;
 
+@SuppressWarnings("deprecation")
 public class Main extends Activity {
 	private final static int cursW = 16;
 	private final static int cursH = 40;
 	
 	private TextView cursor;
-	private ImageView map;
 	private LinearLayout linLayout;
 	private AbsoluteLayout absLayout;
 
@@ -46,7 +44,6 @@ public class Main extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		map = (ImageView) findViewById(id.mapView);
 		linLayout = (LinearLayout) findViewById(R.id.linearLayout);
 		absLayout = ((AbsoluteLayout) findViewById(R.id.absLayout));
 		bLocate = (Button) findViewById(R.id.locateButton);

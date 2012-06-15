@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import fr.utbm.lo53.wipos.mobile.Common;
 
 public class Measure extends AsyncTask<Long, Void, Void>
@@ -24,8 +25,7 @@ public class Measure extends AsyncTask<Long, Void, Void>
 			tmp = new URL(Common.SERVER + "Measure");
 		} catch (MalformedURLException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(Measure.class.getName(), "Network", e);
 		}
 		MEASURE = tmp;
 	}
@@ -60,7 +60,7 @@ public class Measure extends AsyncTask<Long, Void, Void>
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Log.e(getClass().getName(), "Network", e);
 		}
 		return null;
 	}
