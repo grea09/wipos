@@ -7,12 +7,29 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import android.os.AsyncTask;
 import fr.utbm.lo53.wipos.mobile.Common;
 
 public class Measure extends AsyncTask<Long, Void, Void>
 {
+	public static final URL MEASURE;
+	static
+	{
+		URL tmp = null; //Whoa ! Java sucks sometime ...
+		try
+		{
+			tmp = new URL(Common.SERVER + "Measure");
+		} catch (MalformedURLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MEASURE = tmp;
+	}
+	
 	@Override
 	protected Void doInBackground(Long... coordinate)
 	{
@@ -29,12 +46,12 @@ public class Measure extends AsyncTask<Long, Void, Void>
 				socket.send(packet);
 				Thread.yield();
 			}
-			DataOutputStream dataOuputStream = (DataOutputStream) (Common.SERVER.openConnection().getOutputStream());
+			DataOutputStream dataOuputStream = (DataOutputStream) (MEASURE.openConnection().getOutputStream());
 			dataOuputStream.writeBytes("MEASURE;" + coordinate[0] + ";" + coordinate[1] + ";" + 1); // TODO mid
 			dataOuputStream.flush();
 			dataOuputStream.close();
 			
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Common.SERVER.openConnection().getInputStream()));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(MEASURE.openConnection().getInputStream()));
 			String[] params = bufferedReader.readLine().split(";");
 			bufferedReader.close();
 			assert params[0] == "OK";

@@ -7,12 +7,30 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import android.os.AsyncTask;
 import fr.utbm.lo53.wipos.mobile.Common;
 
 public class Locate extends AsyncTask<Void, Void, Long[]>
 {
+	public static final URL LOCATE;
+	static
+	{
+		URL tmp = null; //Whoa ! Java sucks sometime ...
+		try
+		{
+			tmp = new URL(Common.SERVER + "Locate");
+		} catch (MalformedURLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		LOCATE = tmp;
+	}
+	
+	
 	@Override
 	protected Long[] doInBackground(Void... arg0)
 	{
@@ -28,12 +46,12 @@ public class Locate extends AsyncTask<Void, Void, Long[]>
 				socket.send(packet);
 				Thread.yield();
 			}
-			DataOutputStream dataOuputStream = (DataOutputStream) (Common.SERVER.openConnection().getOutputStream());
+			DataOutputStream dataOuputStream = (DataOutputStream) (LOCATE.openConnection().getOutputStream());
 			dataOuputStream.writeBytes("LOCATE");
 			dataOuputStream.flush();
 			dataOuputStream.close();
 			
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Common.SERVER.openConnection().getInputStream()));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(LOCATE.openConnection().getInputStream()));
 			String[] params = bufferedReader.readLine().split(";");
 			bufferedReader.close();
 			assert params.length == 4;
