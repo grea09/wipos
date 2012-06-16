@@ -3,12 +3,49 @@
 
 \subsection{Positioning server}
 
+% ____________________________________________________________________________
 \subsection{Android terminal}
 
 \subsubsection{Overview}
 
+The application must communicate to the server in order to locate the android
+terminal. 
+
+\subsubsection{Classes}
+
+The \verb+main+ class extends the \verb+Activity+ class. It set the layout, with
+the buttons and the map, and interacts with the other classes to communicate
+with the server.
+
+The \verb+Locate+ class ...
+
+The \verb+Locate+ class ...
+
+The \verb+Common+ class ...
+
 \subsubsection{Layout}
 
+The Android application shows a map (a picture), on which we display the
+position of the terminal.
+
+We have two modes, with corresponding buttons :
+
+\begin{itemize}
+    \item toggle button On : set visible \textit{Cancel} and \textit{Measure}
+        buttons.
+    \item toggle button Off : set visible \textit{Locate} button.
+\end{itemize}
+
+\begin{description}
+    \item[Cancel] Actually, does nothing, but does it well.
+    \item[Measure] Send a measure request via the \verb+Measure+ class.
+    \item[Locate] Send a locate request to know the terminal position via the
+        \verb+Locate+ class.
+\end{description}
+
+When the user touch the map, the cursor put itself where the user touched.
+
+% ____________________________________________________________________________
 \subsection{Wi-Fi access point}
 
 \subsubsection{Short recall of the specifications}
@@ -38,7 +75,7 @@ pcaplib previously installed, to get the information from the frames.
 
 \subsubsection{RSSI listener : Parsing the frame}
 
-The software read the frame header. This give us, among other things, 
+The software read the frame header. This give us, among other things,
 the MAC address of the device emitting the message, and the RSSI value.
 
 \subsubsection{RSSI listener : Listing the information}

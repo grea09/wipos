@@ -1,7 +1,25 @@
 \lhead{User manual}
 \section{User manual}
 
+\subsection{Running the air point program}
 
+You have to compile the router program : in the router directory run \verb+make+
+and then send the generated binary called \verb+router+ to the router via scp.
 
+Log as root on the rooter and run the command 
 
+\verb+# iwc monitor 1+
+
+to enable the \verb+prism0+ interface.
+
+Then, run our program using the following command :
+
+\verb+# ./router+
+
+This way, the air point listen to the RSSI messages and can reply to the server
+requests.
+
+\subsection{Android}
+
+\subsection{Positioning server}
 
