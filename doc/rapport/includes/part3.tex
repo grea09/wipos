@@ -1,59 +1,6 @@
 \lhead{Analysis of the work}
 \section{Analysis of the work}
 
-\subsection{Positioning server}
-
-% complete here
-
-% ____________________________________________________________________________
-\newpage
-\subsection{Android terminal}
-
-As we already worked on Android development in other UVs or for our personal
-interest, we were already familiarized with this environment.
-
-\subsubsection{Overview}
-
-The application must communicate to the server in order to locate the android
-terminal.
-
-\subsubsection{Classes}
-
-The \verb+main+ class extends the \verb+Activity+ class. It set the layout, with
-the buttons and the map, and interacts with the other classes to communicate
-with the server.
-
-The \verb+Locate+ class... % complete
-
-The \verb+Locate+ class... % complete
-
-The \verb+Common+ class... % complete
-
-\subsubsection{Layout}
-
-The Android application shows a map (a picture), on which we display the
-position of the terminal.
-
-We have two modes, with corresponding buttons :
-
-\begin{itemize}
-    \item toggle button On : set visible \textit{Cancel} and \textit{Measure}
-        buttons.
-    \item toggle button Off : set visible \textit{Locate} button.
-\end{itemize}
-
-\begin{description}
-    \item[Cancel] Actually, does nothing, but does it well.
-    \item[Measure] Send a measure request via the \verb+Measure+ class.
-    \item[Locate] Send a locate request to know the terminal position via the
-        \verb+Locate+ class.
-\end{description}
-
-When the user touch the map, the cursor put itself where the user touched.
-% Complete here
-
-% ____________________________________________________________________________
-\newpage
 \subsection{Wi-Fi access point}
 
 \subsubsection{Short recall of the specifications}
@@ -169,6 +116,122 @@ If we had a little more time and if we wanted to make something more usable, we
 would make some changes. We would make it run in background (as a daemon for
 example). Maybe we would add the possibility for the user to choose the port to
 communicate, by specifying an argument to our executable.
+
+\newpage
+
+\subsection{Positioning server}
+
+
+The application is divided in 3 packages. A \verb+Common+ class is used for configuration and generic fonctionalities.
+\subsubsection{Logic}
+The Database was implemented by using Sqlite. Sqlite is a light and effecient Database Management System, that can store its information in a sincle file. It don't need any configuration. The Server use an existing file, but can also generate the schema.
+The logic package hold all the logical classes. Each class match a table in the database. They are configured to work with ORMLite in order to simplify database management. ORMLite is a simple java ORM (Object Relational Mapper) that can easily manage to seamlessly transform Table as if they where java objects. Some key classes have a \verb+fromRequest+ function. This function can initialise the object from splited request or response. These objects are very simple and have all atributes set as public as no control is needed.
+Here is the Location class :
+\begin{lstlisting}
+@DatabaseTable
+public class Location
+{
+	public Location()
+	{
+		super();
+	}
+	@DatabaseField(generatedId = true)
+	public int id;
+	@DatabaseField
+	public double x;
+	@DatabaseField
+	public double y;
+	@DatabaseField(foreign = true)
+	public Map map;
+	
+	public String toString()
+	{
+		return x+";"+y+";";
+	}
+
+	public void fromRequest(String[] params)
+	{
+		if(params.length > 4)
+		{
+			x = Integer.decode(params[1]);
+			y = Integer.decode(params[2]);
+		}
+	}
+}
+\end{lstlisting}
+
+\subsubsection{Servlets}
+As previously discuted, there are two servlets, \verb+Measure+ and \verb+Locate+. Each one start the \verb+UdpThread+.
+\verb+Measure+ just send a request to all AP. \verb+Locate+ is a bit more complicated as it must wait for the AP responses and database filling. The \verb+Locate+ class has a static list of waiting servlets :
+\begin{lstlisting}
+private static HashMap<String, Locate> waitList = new HashMap<String, Locate>();
+\end{lstlisting}
+At start it verify if there are no pending request for same client mac address. after sending the request to AP, it insert itself in waiting list. Then the servlet invoke \verb+wait(timeout)+ in order to wait for all the APs responses. The \verb+UdpThread+ notify for each response the servlert corresponding to the client mac address.
+The \verb+Locate+ have also a locate function that must retrieve the nearest measurment from the database.
+Here is the single result request that retrieve it :
+\begin{lstlisting}
+select id
+from TempRssi as T
+	inner join Rssi as R
+	on T.accessPoint = R.accessPoint
+where T.clientMac = '?'
+group by 1
+order by (avg(abs(R.average - T.average))) asc limit 1
+\end{lstlisting}
+The ? parameter is the client mac address. This is the only request of the project as there are no need to use those with an ORM.
+
+\subsubsection{Thread}
+The \verb+UdpThread+ class is used to gather all APs response and to fill the database with gathered data. Eventualy, if the response does not contains the additional data (location response) the \verb+UdpThread+ notify the waiting servlet.
+
+\newpage
+\subsection{Android terminal}
+
+As we already worked on Android development in other UVs or for our personal
+interest, we were already familiarized with this environment.
+
+\subsubsection{Overview}
+
+The application must communicate to the server in order to locate the android
+terminal.
+
+\subsubsection{Classes}
+
+The \verb+main+ class extends the \verb+Activity+ class. It set the layout, with
+the buttons and the map, and interacts with the other classes to communicate
+with the server.
+
+The \verb+Measure+ class extends AsyncTask in order to avoid calling network functionality in main thread. It send a burst of broadcast packets then send our location to the server. 
+
+The \verb+Locate+ class is the same exepts that it ask for position and then return it.
+
+The \verb+Common+ class hold constants like server URL and port to configure the application.
+
+\subsubsection{Layout}
+
+The Android application shows a map (a picture), on which we display the
+position of the terminal.
+
+We have two modes, with corresponding buttons :
+
+\begin{itemize}
+    \item toggle button On : set visible \textit{Cancel} and \textit{Measure}
+        buttons.
+    \item toggle button Off : set visible \textit{Locate} button.
+\end{itemize}
+
+\begin{description}
+    \item[Cancel] Actually, does nothing, but does it well.
+    \item[Measure] Send a measure request via the \verb+Measure+ class.
+    \item[Locate] Send a locate request to know the terminal position via the
+        \verb+Locate+ class.
+\end{description}
+
+When the user touch the map, the cursor put itself where the user touched.
+Then the user can accept or cancel measure.
+Once accepted the measure is send as parameter of the Measure class to register it.
+The locate button trigger a location request by using the Locate class. The location is returned to caller and the cursor is placed in the location returned by the server.
+
+
 
 
 

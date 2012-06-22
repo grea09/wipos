@@ -31,10 +31,10 @@ import fr.utbm.lo53.wipos.server.thread.UdpThread;
 public class Locate extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static UdpThread udpThread = new UdpThread();
-	private static HashMap<String, Locate> waitList;
+	private static HashMap<String, Locate> waitList = new HashMap<String, Locate>();
 	private String mac;
 	
-	public Map<AccessPoint, Double> rssis;
+	public Map<AccessPoint, Double> rssis = new HashMap<AccessPoint, Double>();
 
 	public void finalize() throws Throwable
 	{
@@ -51,14 +51,13 @@ public class Locate extends HttpServlet {
 		ConnectionSource connectionSource = new JdbcConnectionSource(Common.DATABASE_URL);
 		Dao<Location, String> rawDao = DaoManager.createDao(connectionSource, Location.class);
 		GenericRawResults<String[]> result = rawDao.queryRaw(
-			    "select id" +
-			    "from TempRssi as T" +
-			    "inner join Rssi as R" +
-			    "on T.accessPoint = R.accessPoint" +
-			    "where T.clientMac = ?" +
-			    "group by 1" +
-			    "order by (avg(abs(R.average - T.average))) desc limit 1", 
-			    mac
+			    "select id " +
+			    "from TempRssi as T " +
+			    "inner join Rssi as R " +
+			    "on T.accessPoint = R.accessPoint " +
+			    "where T.clientMac = '" + mac + "' " + 
+			    "group by 1 " +
+			    "order by (avg(abs(R.average - T.average))) asc limit 1"
 			    );
 		int id = Integer.parseInt(result.getFirstResult()[0]);
 		result.close();
@@ -89,13 +88,15 @@ public class Locate extends HttpServlet {
 			waitList.put(mac, this);
 			for (int i = 0; i < Common.ACCESS_POINT_IP.length; i++)
 			{
-				try
-				{
-					this.wait();
-				} catch (InterruptedException e)
-				{
-					out.println("ERROR");
-					e.printStackTrace(out);
+				synchronized (this) {
+					try
+					{
+						this.wait(5000);
+					} catch (InterruptedException e)
+					{
+						out.println("ERROR");
+						e.printStackTrace(out);
+					}
 				}
 			}
 			
@@ -108,9 +109,16 @@ public class Locate extends HttpServlet {
 				out.println("ERROR");
 				e.printStackTrace(out);
 			}
-			
+			if(location == null)
+			{
+				out.println("ERROR : Cannot find location. Or we don't have data in DB or we have no response from AP" );
+			}
+			else
+			{
+				out.println("LOCATION;" + location + location.map);
+			}
 	
-		    out.println("LOCATION;" + location + location.map);
+		    
 		}
 		else
 		{

@@ -21,11 +21,22 @@ Then, run our program using the following command :
 This way, the air point listen to the RSSI messages and can reply to the server
 requests.
 
-\subsection{Android}
-
-% How to use the Android application
 
 \subsection{Positioning server}
 
 % How to use the server
+First we need to use Eclipse to import the project. Relocate the server.db SQLite file to the working directory in which the server will be launched (Often home directory).
+Then go to Options > Servers and add a tomcat 7 server.
+After that right click the project and affect the server to it. A simple click on run must lauch the server.
 
+
+\subsection{Android}
+
+% How to use the Android application
+The Android application have two modes :
+\begin{itemize}
+    \item Measure mode
+    \item Locate mode
+\end{itemize}
+You can swich between them by clicking the Mode button. In measure mode point your location then click accept.
+In Location mode a pin appear where the server locate you.

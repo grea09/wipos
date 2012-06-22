@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,7 +25,17 @@ import fr.utbm.lo53.wipos.server.thread.UdpThread;
 public class Measure extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static UdpThread udpThread = new UdpThread();
-
+	private static DatagramSocket socket;
+	static
+	{
+		try {
+			socket = new DatagramSocket(Common.PORT);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+	}
+	
 	public void finalize() throws Throwable
 	{
 		udpThread.finalize();
@@ -51,7 +62,6 @@ public class Measure extends HttpServlet {
 		
 		for(byte[] accessPointIp: Common.ACCESS_POINT_IP)
 		{
-			DatagramSocket socket = new DatagramSocket(Common.PORT);
 			InetAddress address = InetAddress.getByAddress(accessPointIp);
 			DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, 1234);
 			socket.send(packet);
@@ -59,8 +69,8 @@ public class Measure extends HttpServlet {
 		
 		response.setContentType("text/html;charset=UTF-8");
 	    PrintWriter out = response.getWriter();
-
-	    out.println("OK");
+	    while(true);
+	    //out.println("OK");
 	}
 
 	/**

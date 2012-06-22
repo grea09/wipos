@@ -6,16 +6,6 @@ The lab work took place on seven 3-hours sessions.
 This part describes what features we have implemented and how much time does it
 took.
 
-\subsection{Positioning server}
-
-% ...
-
-\subsection{Android application}
-
-The android application interface took about 6 our to be implemented and tested.
-
-% talk about the locate and measure classes
-
 \subsection{Wi-Fi air point}
 
 During the first lab session, we set our workspace the virtual machine, 
@@ -27,7 +17,22 @@ detected and the RSSI received. It took about 6-7 hours.
 It also implements a socket communication with the server. About 1 hour to
 program it.
 
+\subsection{Positioning server}
+The server is the center part of the system. it handles a database that store the informations gathered by the different requests.
+The server have two servlets. Each ones can manage a different mode of operation.
+The servlet just send a RSSI request to each AP.
+\subsubsection{Measure}
+    The measure servlet manage measuring request. It can send a positionning request to each AP including the data sended by the Mobile device. The AP respond with the suplementary informations. This servlet returns just OK to the Android Device.
+\subsubsection{Locate}
+     The locate servlet handle the location request. It sends a request to all the APs and with the return of the responses, notify the servlet. When all the AP had responded it can compute with the help of the data base the nearest measured location for this request then send it back to the Android terminal. 
 
+\subsection{Android application}
 
+The android application interface took about 6 hour to be implemented and tested.
+% TODO insert screen shot here
 
-
+% talk about the locate and measure classes
+\subsubsection{Measure}
+    The measure task send a burst of broadcast packet to obtain a clear RSSI mean on each receiving AP. Then it request the server with the indicated location.
+\subsubsection{Locate}
+     The locate task, as for the measure task, send a burst of packet to broadcast address. Then it asks for a location to the server and return to caller. 

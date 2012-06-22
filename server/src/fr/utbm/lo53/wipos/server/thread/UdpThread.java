@@ -46,6 +46,15 @@ public class UdpThread extends Thread
     }
 	
 	@Override
+	public void start()
+	{
+		if(!isAlive())
+		{
+			super.start();
+		}
+	}
+	
+	@Override
 	public void finalize() throws Throwable
     {
     		super.finalize();
@@ -120,6 +129,7 @@ public class UdpThread extends Thread
 					// TODO: handle exception
 					e.printStackTrace();
 				}
+				Thread.yield();
 			}
 		}
 	}

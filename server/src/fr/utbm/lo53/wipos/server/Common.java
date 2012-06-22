@@ -9,7 +9,6 @@ import java.util.HashMap;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 import fr.utbm.lo53.wipos.server.logic.AccessPoint;
 import fr.utbm.lo53.wipos.server.logic.Location;
@@ -39,7 +38,7 @@ public final class Common
 		for(Class<?> clazz: Common.CLASSES)
 		{
 			dao.put(clazz,(Dao<?, Integer>) DaoManager.createDao(connectionSource, clazz));
-			TableUtils.createTable(connectionSource, clazz);
+			//TableUtils.createTable(connectionSource, clazz);
 		}
 		return dao;
 	}
