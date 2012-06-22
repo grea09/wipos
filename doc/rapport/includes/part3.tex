@@ -3,14 +3,19 @@
 
 \subsection{Positioning server}
 
+% complete here
+
 % ____________________________________________________________________________
 \newpage
 \subsection{Android terminal}
 
+As we already worked on Android development in other UVs or for our personal
+interest, we were already familiarized with this environment.
+
 \subsubsection{Overview}
 
 The application must communicate to the server in order to locate the android
-terminal. 
+terminal.
 
 \subsubsection{Classes}
 
@@ -18,11 +23,11 @@ The \verb+main+ class extends the \verb+Activity+ class. It set the layout, with
 the buttons and the map, and interacts with the other classes to communicate
 with the server.
 
-The \verb+Locate+ class...
+The \verb+Locate+ class... % complete
 
-The \verb+Locate+ class...
+The \verb+Locate+ class... % complete
 
-The \verb+Common+ class...
+The \verb+Common+ class... % complete
 
 \subsubsection{Layout}
 
@@ -45,6 +50,7 @@ We have two modes, with corresponding buttons :
 \end{description}
 
 When the user touch the map, the cursor put itself where the user touched.
+% Complete here
 
 % ____________________________________________________________________________
 \newpage
@@ -65,7 +71,7 @@ This two tasks will be implemented as two threads, using \verb+pthread+.
 \subsubsection{RSSI listener : Configuring the access point}
 
 The first step of this part was to configure the AP (Access Point) to listen
-the IRSSI messages. So we installed the pcap library on it and then we set the
+the RSSI messages. So we installed the pcap library on it and then we set the
 monitoring mode thanks to :
 
 \begin{verbatim}
@@ -152,7 +158,15 @@ When we receive such request, we parse it in order to get the concerning MAC
 address. Then we compute the average of the RSSI values linked to this address
 so we can send the response to the server.
 
+\subsection{Analysis}
 
+As we said, this part of the project works correctly and all the different
+parts were implemented. 
+
+If we had a little more time and if we wanted to make something more usable, we
+would make some changes. We would make it run in background (as a daemon for
+example). Maybe we would add the possibility for the user to choose the port to
+communicate, by specifying an argument to our executable.
 
 
 
